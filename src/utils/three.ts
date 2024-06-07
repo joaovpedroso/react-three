@@ -43,10 +43,56 @@ const getThreeArray = (itens: IThreeItem[]): IThreeItem[] => {
         };
     });
 
-
     const ordenedArrayByChildrens = listItems.sort(sortChildrens);
 
     return ordenedArrayByChildrens
 };
 
-export {getThreeArray};
+const eSelecionado = (name: string, searchTerm: string) => {
+    return name.toLowerCase().includes(searchTerm.toLowerCase())
+}
+
+const findRecursiveItem = (item: IThreeItem, searchTerm: string): IThreeItem | null => {
+    if (eSelecionado(item.name, searchTerm)) 
+        return item;
+
+    if (item.childrens) {
+        const childrens: IThreeItem[] = [];
+        
+        item.childrens.forEach(child => {
+            const result = findRecursiveItem(child, searchTerm);
+            if (result)
+                childrens.push(result);
+            
+
+            return null;
+        })
+
+        if( childrens && childrens.length > 0 )
+            return {
+                ...item,
+                childrens
+            };
+    }
+
+    return null;
+} 
+
+const  filterThreeItensBySearchTerm = (itens: IThreeItem[], searchTerm: string) => {
+    const results: IThreeItem[] = [];
+
+    itens.forEach(item => {
+        const result = findRecursiveItem(item, searchTerm);
+        if (result) 
+            results.push(result);
+                
+    })
+
+    return results;
+}
+
+const filterThreeItens = (itens: IThreeItem[], searchTerm: string) => {
+   return filterThreeItensBySearchTerm(itens, searchTerm)
+}
+
+export {getThreeArray, filterThreeItens};
