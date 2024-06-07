@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+
+  frontend:
+    build:
+      context: ./.setup/
+      dockerfile: Dockerfile
+    container_name: frontend-web-app
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app
+      - /app/node_modules
+
+networks:
+  developers:
+    driver: bridge
