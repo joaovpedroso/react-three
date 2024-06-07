@@ -5,7 +5,7 @@ import * as Styled from "./NavItem.styles";
 
 
 const NavItem: FC<INavItem> = (item: INavItem) => (
-    <Styled.NavigationItem active={item.active}>
+    <Styled.NavigationItem $active={item.active}>
         <img src={Icon} alt="Ícone de pirâmide" />
         {item.label}
     </Styled.NavigationItem>

@@ -11,7 +11,7 @@ const BREADCRUMBS = [
     },
     {
       label: "Apex Unit",
-      route: "",
+      route: "/",
       active: false,
     }
 ];

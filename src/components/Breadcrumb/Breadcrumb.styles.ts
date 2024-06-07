@@ -11,14 +11,14 @@ const BreadcrumbList = styled.ul`
     font-weight: 400;
     font-size: 14px;
 `;
-const BreadcrumbItem = styled.li<{active: boolean}>`
+const BreadcrumbItem = styled.li<{$active: boolean}>`
     display: flex;
     align-items: center;
     justify-content: start;
     gap: 12px;
 
     ${
-        ({active}) => active && css`    
+        ({$active}) => $active && css`    
             color: ${({theme}) => theme.colors["gray-950"]};
             font-weight: 600;
             font-size: 20px;

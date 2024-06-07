@@ -3,12 +3,12 @@ import { INavItem } from "../components/NavItem/NavItem.types";
 const NAV_ITEMS: INavItem[] = [
     {
         label: "Apex Unit",
-        route: "",
+        route: "/",
         active: true,
     },
     {
         label: "Tobias Unit ",
-        route: "",
+        route: "#",
         active: false,
     },
     {

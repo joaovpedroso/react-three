@@ -6,7 +6,7 @@ import * as Style from "./Navbar.styles";
 const Navbar: FC<INavbar> = ({items}: INavbar ) => {
     return (
         <Style.NavList>
-            {items.map(navItem => <NavItem {...navItem} />)}
+            {items.map(navItem => <NavItem {...navItem} key={navItem.route} />)}
         </Style.NavList>
     )
 };
