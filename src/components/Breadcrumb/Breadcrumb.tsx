@@ -1,21 +1,21 @@
-import { FC, Fragment } from "react";
+import { FC} from "react";
 import * as Style from "./Breadcrumb.styles";
 import { IBreadcrumb } from "./Breadcrumb.types";
 
-const Breadcrumb: FC<IBreadcrumb> = ({breadcrumbs}) => (
+const Breadcrumb: FC<IBreadcrumb> = ({ selectedCompany }: IBreadcrumb) => (
     <Style.BreadcrumbList>
-        {breadcrumbs.map((breadcrumb, index) => (
-            <Fragment key={`${breadcrumb.route}-${index}`}>
-                <Style.BreadcrumbItem $active={breadcrumb.active}>
-                    <span>
-                        {
-                            (index > 0) && index < breadcrumbs.length && '/ '
-                        }
-                        {breadcrumb.label}
-                    </span>
-                </Style.BreadcrumbItem>
-            </Fragment>
-        ))}
+         <Style.BreadcrumbItem $active>
+            <span>
+                Ativos 
+                {selectedCompany?.name && '/'}
+            </span>
+        </Style.BreadcrumbItem>
+
+        <Style.BreadcrumbItem $active={false}>
+            <span>
+                {selectedCompany?.name}
+            </span>
+        </Style.BreadcrumbItem>
     </Style.BreadcrumbList>
 )
 

@@ -15,7 +15,7 @@ const SearchInput = styled.input`
 
     background-image: url(${Search});
     background-repeat: no-repeat;
-    background-position: calc(100% - 12px);
+    background-position: calc(100% - 30px);
 `;
 
 SearchInput.defaultProps = {
