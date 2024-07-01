@@ -1,64 +1,97 @@
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Header } from './components/Header'
 import { Main } from 'src/components/Main'
 import { PageHeader } from 'src/components/PageHeader/PageHeader'
 import { SearchInput } from 'src/components/SearchInput'
 import { Sidebar } from 'src/components/Sidebar'
 import { ThreeList } from 'src/components/ThreeList'
+import { filterBySearchTerm, filterBySituation, getThreeArray } from 'src/utils'
+import { useDebounce, useLocations, useAssets} from './hooks'
+import { IThreeItem } from './components/ThreeList/ThreeList.types'
+import { ILocation } from './services/locations/types'
+import { IAssets } from './services/assets/types'
+import { ICompany } from './services/companies/types'
+import { INavItem } from './components/NavItem/NavItem.types'
 
 function App() {
+  const [selectedCompany, setSelectedCompany] = useState<INavItem | null>(null  );
+
+  const { locations, refetchLocations } = useLocations({companyId: selectedCompany?.id ?? ''});
+  const { assets, refetchAssets } = useAssets({companyId: selectedCompany?.id ?? ''});
+
+  const threeItemsList: IThreeItem[] = useMemo(() => {
+    if( (!locations || locations.length < 1) && (!assets || assets?.length < 1) )
+      return [];
+
+    const locationsList = locations?.length ? locations : [];
+    const assetList = assets?.length ? assets : [];
+
+    return getThreeArray(locationsList as ILocation[], assetList as IAssets[]);
+  }, [assets, locations]);
+
+  const [filteredThreeItems, setFilteredThreeItems] = useState<IThreeItem[]>(() => threeItemsList);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedTerm = useDebounce(searchTerm, 500);
+
+  const handleChangeSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value)
+  };
+
+  const handleFindLocations = (company: ICompany) => {
+    setSelectedCompany(company as INavItem);
+  }
+
+  const handleFindBySituation = () => {
+    const filteredItems = filterBySituation(threeItemsList, 'sensorType', 'energy');
+
+    setFilteredThreeItems(filteredItems);
+  };
+
+  useEffect(() => {
+      if( !debouncedTerm || debouncedTerm.length === 0 ) {
+        setFilteredThreeItems(threeItemsList)
+        return
+      }
+
+      const filteredItems = filterBySearchTerm(threeItemsList, debouncedTerm)
+      setFilteredThreeItems(filteredItems)
+  }, [debouncedTerm])
+
+  useEffect(() => {
+    setFilteredThreeItems(threeItemsList)
+  }, [threeItemsList])
+
+  useEffect(() => {
+    if(selectedCompany?.id) {
+      refetchLocations();
+      refetchAssets();
+    }
+  }, [selectedCompany?.id])
+
   return (
     <>
-      <Header />
+      <Header onSelectCompany={handleFindLocations} />
       <Main>
-        <PageHeader />
-        <SearchInput />
+        <PageHeader selectedCompany={selectedCompany} />
+        <SearchInput onChange={handleChangeSearch} value={searchTerm} />
+
+      <button onClick={() => handleFindBySituation()}>Filta pelos energy</button>
+
         <Sidebar>
 
-          <ThreeList itens={[
-              {
-                "id": "656a07b3f2d4a1001e2144bf",
-                "name": "CHARCOAL STORAGE SECTOR",
-                "parentId": "65674204664c41001e91ecb4"
-              },
-              {
-                "id": "656733611f4664001f295dd0",
-                "name": "Empty Machine house",
-                "parentId": null
-              },
-              {
-                "id": "656733611f4664001f295dd0",
-                "name": "PRIMEIRO DO CHARCOAL",
-                "parentId": "656a07b3f2d4a1001e2144bf"
-              },
-              {
-                "id": "656733611f4664001f295dd1",
-                "name": "SEGUNDO DO CHARCOAL",
-                "parentId": "656a07b3f2d4a1001e2144bf"
-              },
-              {
-                "id": "656733611f4664001f295dd2",
-                "name": "PENULTIMO DO CHARCOAL",
-                "parentId": "656a07b3f2d4a1001e2144bf"
-              },
-              {
-                "id": "656733611f4664001f295dd3",
-                "name": "ULTIMO DO CHARCOAL",
-                "parentId": "656a07b3f2d4a1001e2144bf"
-              },
-              {
-                "id": "656733b1664c41001e91d9ed",
-                "name": "Machinery house",
-                "parentId": null
-              },
-              {
-                "id": "65674204664c41001e91ecb4",
-                "name": "PRODUCTION AREA - RAW MATERIAL",
-                "parentId": null
-              }
-          ]} />
+        <Suspense fallback={<p>Carreganuuuuuu......</p>}>
 
+          {
+            filteredThreeItems.length > 0 && (
+              <ThreeList itens={filteredThreeItems} />
+            )
+          }
+
+          {filteredThreeItems.length < 1 && (
+            <p>Nenhum resultado encontrado. Selecione uma empresa ou altere o termo de pesquisa para visualizar os itens.</p>
+          )}
+        </Suspense>
         </Sidebar>
-        <h1>Olar</h1>
       </Main>
     </>
   )

@@ -1,3 +1,6 @@
-import { INavItem } from "src/components/NavItem/NavItem.types";
+import { INavItem } from "../NavItem/NavItem.types";
 
-export interface INavbar { items: INavItem[]}
+export interface INavbar {
+    items: INavItem[]
+    onSelectItem: (item: INavItem) => void
+}
